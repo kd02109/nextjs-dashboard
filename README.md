@@ -94,3 +94,8 @@ Next.js의 static rendeeing 기본적인 Fetching 전략은 cacheing을 활용�
 ## Chapter Adding Search and Pagination
 
 - SearchParams와 useSearchParams를 활용하여 pagenation과 search를 구현합니다. url query string을 활용해서 실시간으로 페이지 경로 정보와 검색 정보를 활용할 수 있도록 합니다.
+
+1. query: 검색어 입력, page: pagenation 정보
+2. 전체 row 개수를 fetching 합니다.
+3. 하나의 페이지에서 보여줄 수 있는 row 페이지 개수와 전체 column 개수를 계산하여 pagenation을 구현합니다.
+4. pagenation의 버튼을 클릭하면 Link 컴포넌트와 searchparams를 활용하여 page의 query 값을 업데이트 해서 다이나믹 랜더링이 발생하도록 합니다.
