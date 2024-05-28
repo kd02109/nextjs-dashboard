@@ -62,3 +62,10 @@ CI/CD 파이프라인에서 데이터베이스를 자동으로 설정하고 배�
   ])
 
 ```
+
+## Chapter 8 Static and Dynamaic Rendering
+
+Next.js의 static rendeeing 기본적인 Fetching 전략은 cacheing을 활용합니다. 따라서 실시간으로 데이터를 반영하지 못합니다. dynamic rendering의 경우에는
+실시간 데이터 반영, 쿠키 반영이 가능하다는 장점이 있습니다. 위의 api 요청 방식은 static rendering 방식으로 최초 fetching 한 데이터를 cacheing 합니다. 따라서 실시간 데이터 변경사항을 반영하지 못합니다. 그렇기에 실시간 데이터 반영을 위해서는 추가적인 조치가 필요합니다. `import { unstable_noStore as noStore } from 'next/cache';` 해당 메서드를 활용하여 fetching 전력이 caching 되지 않도록 합니다. 
+
+혹은 Page, Layout에서 fetching 전략을 어떻게 사용할지 정의 합니다. 실시간 데이터 반영을 위해 page에 해당 코드를 추가합니다. `export const dynamic = "force-dynamic"`
