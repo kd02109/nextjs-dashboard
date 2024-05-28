@@ -25,3 +25,40 @@ For more information, see the [course curriculum](https://nextjs.org/learn) on t
 4. 자동화된 배포
 
 CI/CD 파이프라인에서 데이터베이스를 자동으로 설정하고 배포할 때 시딩 스크립트를 사용하여 데이터베이스를 초기화합니다. 이는 배포 과정에서 일관성을 유지하고 수작업을 최소화하는 데 도움을 줍니다.
+
+## Chapter 7 Fetching Data
+### 서버와 소통하기
+- API 엔드포인트를 만들 때는 데이터베이스와 상호 작용하는 로직을 작성해야 합니다.
+- React 서버 컴포넌트(서버에서 데이터 불러오기)를 사용하는 경우 API 계층을 건너뛰고 데이터베이스 비밀을 클라이언트에 노출할 위험 없이 데이터베이스를 직접 쿼리할 수 있습니다.
+- 서버컴포넌트 사용의 장점
+    - 서버 컴포넌트는 `Promise`를 지원하여 데이터 가져오기와 같은 비동기 작업을 위한 더 간단한 솔루션을 제공합니다. `useEffect`, `useState` 또는 fetching 라이브러리를 사용하지 않고도 `async/await` 구문을 사용할 수 있습니다.
+    - 서버 컴포넌트는 서버에서 실행되므로 비용이 많이 드는 데이터 가져오기 및 로직을 서버에 보관하고 결과만 클라이언트로 전송할 수 있습니다.
+    - 앞서 언급했듯이 서버 컴포넌트는 서버에서 실행되므로 추가 API 계층 없이 데이터베이스를 직접 쿼리할 수 있습니다.
+
+### request waterfulls
+```ts
+  const revenue = await fetchRevenue()
+  const latestInvoices = await fetchLatestInvoices()
+  const {      
+      numberOfCustomers,
+      numberOfInvoices,
+      totalPaidInvoices,
+      totalPendingInvoices
+    } = await fetchCardData()
+```
+위와 같은 코드 구조는 __waterfull__ 현상을 유발합니다. 이전 요청의 완료 여부에 따라 달라지는 일련의 네트워크 요청을 의미합니다. 데이터 가져오기의 경우, 각 요청은 이전 요청이 데이터를 반환한 후에만 시작할 수 있습니다.
+
+해당 효과가 필요한 경우도 있지만, 각각의 api가 독립적이라면 waterfull 현상을 유발할 필요는 없습니다. 해당 방법을 해결하는 방법으로 javascript의 `Promise.all()`, `Promise.allSettled()`를 활용합니다.
+```ts
+  const [revenueResult, invoicesResult, {
+    totalPaidInvoices,
+    totalPendingInvoices,
+    numberOfInvoices,
+    numberOfCustomers
+  }] = await Promise.all([
+    fetchRevenue(),
+    fetchLatestInvoices(),
+    fetchCardData(),
+  ])
+
+```
