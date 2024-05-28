@@ -108,3 +108,53 @@ Next.js의 static rendeeing 기본적인 Fetching 전략은 cacheing을 활용�
   서버 액션을 통해 제출되면 해당 액션을 사용하여 데이터를 변경할 수 있을 뿐만 아니라 `revalidatePath` 및 `revalidateTag`와 같은 API를 사용하여 관련 캐시의 유효성을 재검증할 수도 있습니다. 해당 경로와 연관된 caching 정보를 최신화 할 수 있습니다.
 
   form의 action을 활용해서 서버 action을 form과 연결해서 서버에서 form 입력값을 처리할 수 있습니다.
+
+## Chapter13 Handling Errors
+
+### error.tsx
+
+`error.tsx` 파일은 route segment의 UI 경계를 정의하는 데 사용할 수 있습니다. 이 파일은 예기치 않은 오류를 확인하며 사용자에게 대체 UI를 표시할 수 있습니다.
+
+```tsx
+'use client';
+
+import { useEffect } from 'react';
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    // Optionally log the error to an error reporting service
+    console.error(error);
+  }, [error]);
+
+  return (
+    <main className="flex h-full flex-col items-center justify-center">
+      <h2 className="text-center">Something went wrong!</h2>
+      <button
+        className="mt-4 rounded-md bg-blue-500 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-400"
+        onClick={
+          // Attempt to recover by trying to re-render the invoices route
+          () => reset()
+        }
+      >
+        Try again
+      </button>
+    </main>
+  );
+}
+```
+
+- Client Component입니다.
+- Error: 이 객체는 자바스크립트의 기본 Error 객체의 인스턴스입니다.
+- reset: Error 경계를 재설정하는 함수입니다. 이 함수가 실행되면 route segment를 다시 렌더링하려고 시도합니다.
+
+### not-found.tsx
+
+- status 404 Error에 대응해서 좀더 특수한 상황에 대응한 page입니다.
+- next/navigation에서 제공하는 NotFound 메서드와 not-found.tsx를 조합해서 404에 대응하는 페이지를 만들 수 있습니다.
+- 해당 페이지와 기능은 모두 서버 컴포넌트에서 수행되어야 합니다.
