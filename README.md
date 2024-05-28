@@ -158,3 +158,117 @@ export default function Error({
 - status 404 Error에 대응해서 좀더 특수한 상황에 대응한 page입니다.
 - next/navigation에서 제공하는 NotFound 메서드와 not-found.tsx를 조합해서 404에 대응하는 페이지를 만들 수 있습니다.
 - 해당 페이지와 기능은 모두 서버 컴포넌트에서 수행되어야 합니다.
+
+## Chapter14 ServerSide validation
+
+### 웹 접근성
+
+Next.js의 eslint는 `eslint-plugin-jsx-ally` 패키지를 포함하고 있습니다. 따라서 lint 검사를 통해서 alt, aria-\*, role에 대해서 검사를 수행할 수 있습니다. 이러한 웹 접근성을 높이는 방법은 다음과 같습니다.
+
+- Semantic HTML
+- Labelling
+- Focus Outline
+
+### Form validation
+
+Server-side validation을 활용하기 위해서는 react-dom에서 제공하는 api 중 하나인 `useFormState`를 활용합니다.
+
+```tsx
+'use client';
+
+// ...
+import { useFormState } from 'react-dom';
+```
+
+zod의 safeParse() 메서드와 함께 활용합니다. useFormState는 아래와 같이 사용됩니다.
+
+```tsx
+'use client';
+// ...
+import { useFormState } from 'react-dom';
+
+export default function Form({ customers }: { customers: CustomerField[] }) {
+  const initialState = { message: null, errors: {} };
+  // action을 수행할 함수와 초기 객체 데이터를 인자로 받습니다.
+  // state는 errors 객체를 가지며, action에서 반환한 error 메시지와 erros에 대한 정의가 저장됩니다.
+  const [state, dispatch] = useFormState(createInvoice, initialState);
+
+  return <form action={dispatch}>...</form>;
+}
+```
+
+```tsx
+// useFormState에서 활용하는 action 함수는 아래와 같이 정의합니다. input 요소의 name에 맞추어 errors내부에 각기 다른 객체를 정의합니다.
+export type State = {
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  };
+  message?: string | null;
+};
+
+export async function createInvoice(prevState: State, formData: FormData) {
+  const validatedFields = CreateInvoice.safeParse({
+    customerId: formData.get('customerId'),
+    amount: formData.get('amount'),
+    status: formData.get('status'),
+  });
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Invoice.',
+    };
+  }
+}
+```
+
+- `safeParse()` 메서드는 success와 error에 관한 객체를 담고 있습니다. 반환된 객체는 공통된 속성으로 sucess 프로퍼티를 가지며 이를 통해 유효성 검사 통과 여부를 알 수 있습니다.
+- 반환된 state에서 표시되는 error를 표기하기 위해 다음과 같은 처리를 합니다.
+
+```tsx
+<form action={dispatch}>
+  <div className="rounded-md bg-gray-50 p-4 md:p-6">
+    {/* Customer Name */}
+    <div className="mb-4">
+      <label htmlFor="customer" className="mb-2 block text-sm font-medium">
+        Choose customer
+      </label>
+      <div className="relative">
+        <select
+          id="customer"
+          name="customerId"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+          defaultValue=""
+          aria-describedby="customer-error"
+        >
+          <option value="" disabled>
+            Select a customer
+          </option>
+          {customers.map((name) => (
+            <option key={name.id} value={name.id}>
+              {name.name}
+            </option>
+          ))}
+        </select>
+        <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+      </div>
+      <div id="customer-error" aria-live="polite" aria-atomic="true">
+        {state.errors?.customerId &&
+          state.errors.customerId.map((error: string) => (
+            <p className="mt-2 text-sm text-red-500" key={error}>
+              {error}
+            </p>
+          ))}
+      </div>
+    </div>
+    // ...
+  </div>
+</form>
+```
+
+- `aria-describedby="customer-error"`: 선택 요소와 오류 메시지 컨테이너 간의 관계를 설정합니다.` id="customer-error"`인 컨테이너가 선택 요소를 설명한다는 것을 나타냅니다. 화면 리더는 사용자가 선택 상자와 상호 작용할 때 이 설명을 읽고 오류를 알립니다.
+- `id="customer-error"`: 이 id 속성은 선택 입력에 대한 오류 메시지를 담고 있는 HTML 요소를 고유하게 식별합니다. 이는 `aria-describedby`가 관계를 설정하는 데 필요합니다.
+- `aria-live="polite"`: 스크린 리더는 div 내부의 오류가 업데이트되면 사용자에게 정중하게 알려야 합니다. 콘텐츠가 변경되면(예: 사용자가 오류를 수정할 때) 화면 리더는 이러한 변경 사항을 알리되, 사용자가 방해받지 않도록 유휴 상태일 때만 알립니다.
