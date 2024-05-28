@@ -69,3 +69,17 @@ Next.js의 static rendeeing 기본적인 Fetching 전략은 cacheing을 활용�
 실시간 데이터 반영, 쿠키 반영이 가능하다는 장점이 있습니다. 위의 api 요청 방식은 static rendering 방식으로 최초 fetching 한 데이터를 cacheing 합니다. 따라서 실시간 데이터 변경사항을 반영하지 못합니다. 그렇기에 실시간 데이터 반영을 위해서는 추가적인 조치가 필요합니다. `import { unstable_noStore as noStore } from 'next/cache';` 해당 메서드를 활용하여 fetching 전력이 caching 되지 않도록 합니다. 
 
 혹은 Page, Layout에서 fetching 전략을 어떻게 사용할지 정의 합니다. 실시간 데이터 반영을 위해 page에 해당 코드를 추가합니다. `export const dynamic = "force-dynamic"`
+
+
+## Chapter 9 Streaming
+`Suspense`를 활용해서 fetching waterfull현상을 유의미하게 처리할 수 있습니다. API 요청을 `Suspense`내부에서 처리하여 각API에 대응하는 로딩화면을 보여줌으로서 더욱 사용자 친화적인 화면을 구성할 수 있으며, 부분 로딩을 구현할 수 있습니다.
+
+`Susepnse`를 설정하는 것은 몇가지 조건에 따라 달라집니다.
+1. 사용자가 스트리밍할 때 페이지를 경험하는 방식.
+2. 우선순위를 지정할 콘텐츠.
+3. 컴포넌트가 데이터 가져오기에 의존하는 경우.
+
+또한 `Suspense`를 사용하는 경우 아래의 조건이나 설정을 고려해야 합니다.
+- `loading.tsx`에서 했던 것처럼 전체 페이지를 스트리밍할 수도 있지만 구성 요소 중 하나에 데이터 가져오기가 느린 경우 로딩 시간이 길어질 수 있습니다.
+- 모든 컴포넌트를 개별적으로 스트리밍할 수도 있지만, 준비되는 대로 UI가 화면에 튀어나올 수 있습니다.
+- 페이지 섹션을 스트리밍하여 시차를 두는 효과를 만들 수도 있습니다. 하지만 래퍼 컴포넌트를 만들어야 합니다.
