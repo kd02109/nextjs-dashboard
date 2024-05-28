@@ -91,7 +91,7 @@ Next.js의 static rendeeing 기본적인 Fetching 전략은 cacheing을 활용�
 - 모든 컴포넌트를 개별적으로 스트리밍할 수도 있지만, 준비되는 대로 UI가 화면에 튀어나올 수 있습니다.
 - 페이지 섹션을 스트리밍하여 시차를 두는 효과를 만들 수도 있습니다. 하지만 래퍼 컴포넌트를 만들어야 합니다.
 
-## Chapter Adding Search and Pagination
+## Chapter11 Adding Search and Pagination
 
 - SearchParams와 useSearchParams를 활용하여 pagenation과 search를 구현합니다. url query string을 활용해서 실시간으로 페이지 경로 정보와 검색 정보를 활용할 수 있도록 합니다.
 
@@ -99,3 +99,12 @@ Next.js의 static rendeeing 기본적인 Fetching 전략은 cacheing을 활용�
 2. 전체 row 개수를 fetching 합니다.
 3. 하나의 페이지에서 보여줄 수 있는 row 페이지 개수와 전체 column 개수를 계산하여 pagenation을 구현합니다.
 4. pagenation의 버튼을 클릭하면 Link 컴포넌트와 searchparams를 활용하여 page의 query 값을 업데이트 해서 다이나믹 랜더링이 발생하도록 합니다.
+
+## Chapter12 Mutating Data
+
+- Server Action
+  React 서버 액션을 사용하면 서버에서 직접 비동기 코드를 실행할 수 있습니다. 데이터를 변경하기 위해 API 엔드포인트를 만들 필요가 없습니다. 대신 서버에서 실행되는 비동기 함수를 작성하고 **클라이언트 또는 서버 컴포넌트에서 호출**할 수 있습니다.
+
+  서버 액션을 통해 제출되면 해당 액션을 사용하여 데이터를 변경할 수 있을 뿐만 아니라 `revalidatePath` 및 `revalidateTag`와 같은 API를 사용하여 관련 캐시의 유효성을 재검증할 수도 있습니다. 해당 경로와 연관된 caching 정보를 최신화 할 수 있습니다.
+
+  form의 action을 활용해서 서버 action을 form과 연결해서 서버에서 form 입력값을 처리할 수 있습니다.
