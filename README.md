@@ -5,7 +5,8 @@ This is the starter template for the Next.js App Router Course. It contains the 
 For more information, see the [course curriculum](https://nextjs.org/learn) on the Next.js Website.
 
 ## Chapter 6 Setting DB
-###  Seeding
+
+### Seeding
 
 1. 초기 데이터 설정
 
@@ -27,59 +28,69 @@ For more information, see the [course curriculum](https://nextjs.org/learn) on t
 CI/CD 파이프라인에서 데이터베이스를 자동으로 설정하고 배포할 때 시딩 스크립트를 사용하여 데이터베이스를 초기화합니다. 이는 배포 과정에서 일관성을 유지하고 수작업을 최소화하는 데 도움을 줍니다.
 
 ## Chapter 7 Fetching Data
+
 ### 서버와 소통하기
+
 - API 엔드포인트를 만들 때는 데이터베이스와 상호 작용하는 로직을 작성해야 합니다.
 - React 서버 컴포넌트(서버에서 데이터 불러오기)를 사용하는 경우 API 계층을 건너뛰고 데이터베이스 비밀을 클라이언트에 노출할 위험 없이 데이터베이스를 직접 쿼리할 수 있습니다.
 - 서버컴포넌트 사용의 장점
-    - 서버 컴포넌트는 `Promise`를 지원하여 데이터 가져오기와 같은 비동기 작업을 위한 더 간단한 솔루션을 제공합니다. `useEffect`, `useState` 또는 fetching 라이브러리를 사용하지 않고도 `async/await` 구문을 사용할 수 있습니다.
-    - 서버 컴포넌트는 서버에서 실행되므로 비용이 많이 드는 데이터 가져오기 및 로직을 서버에 보관하고 결과만 클라이언트로 전송할 수 있습니다.
-    - 앞서 언급했듯이 서버 컴포넌트는 서버에서 실행되므로 추가 API 계층 없이 데이터베이스를 직접 쿼리할 수 있습니다.
+  - 서버 컴포넌트는 `Promise`를 지원하여 데이터 가져오기와 같은 비동기 작업을 위한 더 간단한 솔루션을 제공합니다. `useEffect`, `useState` 또는 fetching 라이브러리를 사용하지 않고도 `async/await` 구문을 사용할 수 있습니다.
+  - 서버 컴포넌트는 서버에서 실행되므로 비용이 많이 드는 데이터 가져오기 및 로직을 서버에 보관하고 결과만 클라이언트로 전송할 수 있습니다.
+  - 앞서 언급했듯이 서버 컴포넌트는 서버에서 실행되므로 추가 API 계층 없이 데이터베이스를 직접 쿼리할 수 있습니다.
 
 ### request waterfulls
+
 ```ts
-  const revenue = await fetchRevenue()
-  const latestInvoices = await fetchLatestInvoices()
-  const {      
-      numberOfCustomers,
-      numberOfInvoices,
-      totalPaidInvoices,
-      totalPendingInvoices
-    } = await fetchCardData()
+const revenue = await fetchRevenue();
+const latestInvoices = await fetchLatestInvoices();
+const {
+  numberOfCustomers,
+  numberOfInvoices,
+  totalPaidInvoices,
+  totalPendingInvoices,
+} = await fetchCardData();
 ```
-위와 같은 코드 구조는 __waterfull__ 현상을 유발합니다. 이전 요청의 완료 여부에 따라 달라지는 일련의 네트워크 요청을 의미합니다. 데이터 가져오기의 경우, 각 요청은 이전 요청이 데이터를 반환한 후에만 시작할 수 있습니다.
+
+위와 같은 코드 구조는 **waterfull** 현상을 유발합니다. 이전 요청의 완료 여부에 따라 달라지는 일련의 네트워크 요청을 의미합니다. 데이터 가져오기의 경우, 각 요청은 이전 요청이 데이터를 반환한 후에만 시작할 수 있습니다.
 
 해당 효과가 필요한 경우도 있지만, 각각의 api가 독립적이라면 waterfull 현상을 유발할 필요는 없습니다. 해당 방법을 해결하는 방법으로 javascript의 `Promise.all()`, `Promise.allSettled()`를 활용합니다.
+
 ```ts
-  const [revenueResult, invoicesResult, {
+const [
+  revenueResult,
+  invoicesResult,
+  {
     totalPaidInvoices,
     totalPendingInvoices,
     numberOfInvoices,
-    numberOfCustomers
-  }] = await Promise.all([
-    fetchRevenue(),
-    fetchLatestInvoices(),
-    fetchCardData(),
-  ])
-
+    numberOfCustomers,
+  },
+] = await Promise.all([fetchRevenue(), fetchLatestInvoices(), fetchCardData()]);
 ```
 
 ## Chapter 8 Static and Dynamaic Rendering
 
 Next.js의 static rendeeing 기본적인 Fetching 전략은 cacheing을 활용합니다. 따라서 실시간으로 데이터를 반영하지 못합니다. dynamic rendering의 경우에는
-실시간 데이터 반영, 쿠키 반영이 가능하다는 장점이 있습니다. 위의 api 요청 방식은 static rendering 방식으로 최초 fetching 한 데이터를 cacheing 합니다. 따라서 실시간 데이터 변경사항을 반영하지 못합니다. 그렇기에 실시간 데이터 반영을 위해서는 추가적인 조치가 필요합니다. `import { unstable_noStore as noStore } from 'next/cache';` 해당 메서드를 활용하여 fetching 전력이 caching 되지 않도록 합니다. 
+실시간 데이터 반영, 쿠키 반영이 가능하다는 장점이 있습니다. 위의 api 요청 방식은 static rendering 방식으로 최초 fetching 한 데이터를 cacheing 합니다. 따라서 실시간 데이터 변경사항을 반영하지 못합니다. 그렇기에 실시간 데이터 반영을 위해서는 추가적인 조치가 필요합니다. `import { unstable_noStore as noStore } from 'next/cache';` 해당 메서드를 활용하여 fetching 전력이 caching 되지 않도록 합니다.
 
 혹은 Page, Layout에서 fetching 전략을 어떻게 사용할지 정의 합니다. 실시간 데이터 반영을 위해 page에 해당 코드를 추가합니다. `export const dynamic = "force-dynamic"`
 
-
 ## Chapter 9 Streaming
+
 `Suspense`를 활용해서 fetching waterfull현상을 유의미하게 처리할 수 있습니다. API 요청을 `Suspense`내부에서 처리하여 각API에 대응하는 로딩화면을 보여줌으로서 더욱 사용자 친화적인 화면을 구성할 수 있으며, 부분 로딩을 구현할 수 있습니다.
 
 `Susepnse`를 설정하는 것은 몇가지 조건에 따라 달라집니다.
+
 1. 사용자가 스트리밍할 때 페이지를 경험하는 방식.
 2. 우선순위를 지정할 콘텐츠.
 3. 컴포넌트가 데이터 가져오기에 의존하는 경우.
 
 또한 `Suspense`를 사용하는 경우 아래의 조건이나 설정을 고려해야 합니다.
+
 - `loading.tsx`에서 했던 것처럼 전체 페이지를 스트리밍할 수도 있지만 구성 요소 중 하나에 데이터 가져오기가 느린 경우 로딩 시간이 길어질 수 있습니다.
 - 모든 컴포넌트를 개별적으로 스트리밍할 수도 있지만, 준비되는 대로 UI가 화면에 튀어나올 수 있습니다.
 - 페이지 섹션을 스트리밍하여 시차를 두는 효과를 만들 수도 있습니다. 하지만 래퍼 컴포넌트를 만들어야 합니다.
+
+## Chapter Adding Search and Pagination
+
+- SearchParams와 useSearchParams를 활용하여 pagenation과 search를 구현합니다. url query string을 활용해서 실시간으로 페이지 경로 정보와 검색 정보를 활용할 수 있도록 합니다.
