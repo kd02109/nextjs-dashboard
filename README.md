@@ -4,6 +4,11 @@ This is the starter template for the Next.js App Router Course. It contains the 
 
 For more information, see the [course curriculum](https://nextjs.org/learn) on the Next.js Website.
 
+### Test 계정
+
+- Id: user@nextmail.com
+- Password: 123456
+
 ## Chapter 6 Setting DB
 
 ### Seeding
