@@ -272,3 +272,12 @@ export async function createInvoice(prevState: State, formData: FormData) {
 - `aria-describedby="customer-error"`: 선택 요소와 오류 메시지 컨테이너 간의 관계를 설정합니다.` id="customer-error"`인 컨테이너가 선택 요소를 설명한다는 것을 나타냅니다. 화면 리더는 사용자가 선택 상자와 상호 작용할 때 이 설명을 읽고 오류를 알립니다.
 - `id="customer-error"`: 이 id 속성은 선택 입력에 대한 오류 메시지를 담고 있는 HTML 요소를 고유하게 식별합니다. 이는 `aria-describedby`가 관계를 설정하는 데 필요합니다.
 - `aria-live="polite"`: 스크린 리더는 div 내부의 오류가 업데이트되면 사용자에게 정중하게 알려야 합니다. 콘텐츠가 변경되면(예: 사용자가 오류를 수정할 때) 화면 리더는 이러한 변경 사항을 알리되, 사용자가 방해받지 않도록 유휴 상태일 때만 알립니다.
+
+## Chapter 15 Adding Authentication
+
+- **Authentication** : Authentication은 사용자가 본인이 맞는지 확인하는 것입니다. 사용자 아이디와 비밀번호와 같은 정보를 통해 신원을 증명하는 것입니다.
+- **Authorization** : 사용자의 신원이 확인되면 권한 부여를 통해 애플리케이션의 어떤 부분을 사용할 수 있는지 결정합니다.
+
+### NextAuth.js
+
+Authenication을 위해서 NextAuth를 활용합니다.
